@@ -1,2 +1,0 @@
-# dqnModel
-Sample_text
