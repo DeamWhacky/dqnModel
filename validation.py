@@ -1,7 +1,9 @@
+import flappy_bird_gymnasium
 import gymnasium as gym
 
+
 # Initialise the environment
-env = gym.make("CarRacing-v3", render_mode="human")
+env = gym.make("FlappyBird-v0", render_mode="human")
 
 # Reset the environment to generate the first observation
 observation, info = env.reset(seed=42)
