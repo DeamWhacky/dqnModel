@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 from Train import train, watch
 import sys
 

@@ -2,7 +2,7 @@
 We use a Conda environment. To recreate it:
 
 conda env create -f environment.yml
-conda activate gymenv
+conda activate flappy-dqn
 
 
 For training the model for 2000 episodes (if your folder lacks dqn_model.pth):

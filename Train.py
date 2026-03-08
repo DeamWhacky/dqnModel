@@ -70,18 +70,20 @@ def watch(num_episodes=20):
         state, _ = env.reset()
         done = False
         total_reward = 0
+        pipes_passed = 0
 
         while not done:
 
             action = agent.select_action(state)
 
-            next_state, reward, terminated, truncated, _ = env.step(action)
+            next_state, reward, terminated, truncated, info = env.step(action)
+            
+            pipes_passed = info.get("score", pipes_passed)
 
             done = terminated or truncated
 
             state = next_state
             total_reward += reward
 
-        print(f"Watch Episode {episode+1} | Reward: {total_reward:.2f}")
-
+        print(f"Watch Episode {episode+1} | Pipes: {pipes_passed} | Reward: {total_reward:.2f}")
     env.close()

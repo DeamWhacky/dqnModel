@@ -1,5 +1,5 @@
 import gymnasium as gym
-import flappy_bird_gymnasium
+import flappy_bird_gymnasium # registers FlappyBird-v0 env with gymnasium
 import numpy as np
 
 
@@ -7,7 +7,7 @@ class FlappyBirdDNN(gym.Wrapper):
 
     def __init__(self, render=False):
         render_mode = "human" if render else None
-        env = gym.make("FlappyBird-v0", render_mode=render_mode)
+        env = gym.make("FlappyBird-v0", render_mode=render_mode, disable_env_checker=True)
         super().__init__(env)
 
         self.observation_space = env.observation_space
