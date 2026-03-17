@@ -1,12 +1,22 @@
 import torch
+import os
 from flappy_bird_environment import FlappyBirdDNN
 from DNNAgent import DQNAgent
 
 
-def train(num_episodes=2000):
+def train(reward_type, num_episodes=2000):
+    
+    model_name = f"dqn_{reward_type}.pth"
+
+    if os.path.exists(model_name):
+        choice = input(f"{model_name} exists. Retrain and overwrite? (y/n): ").strip().lower()
+        
+        if choice != 'y':
+            print("Training cancelled.")
+            return
 
     # Create environment (no rendering during training)
-    env = FlappyBirdDNN(render=False)
+    env = FlappyBirdDNN(reward_type, render=False)
 
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
@@ -43,14 +53,14 @@ def train(num_episodes=2000):
         print(f"Episode {episode+1} | Reward: {total_reward:.2f} | Epsilon: {agent.epsilon:.3f}")
 
     # Save trained model
-    torch.save(agent.policy_net.state_dict(), "dqn_model.pth")
-    print("\nTraining complete. Model saved as dqn_model.pth")
+    torch.save(agent.policy_net.state_dict(), model_name)
+    print(f"\nTraining complete. Model saved as {model_name}")
 
     env.close()
 
-def watch(num_episodes=20):
+def watch(reward_type, num_episodes=20):
 
-    env = FlappyBirdDNN(render=True)
+    env = FlappyBirdDNN(reward_type, render=True)
 
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.n
@@ -58,13 +68,22 @@ def watch(num_episodes=20):
     agent = DQNAgent(state_dim, action_dim)
 
     # Load trained model
-    agent.policy_net.load_state_dict(torch.load("dqn_model.pth"))
+    model_name = f"dqn_{reward_type}.pth"
+
+    if not os.path.exists(model_name):
+        print(f"Model {model_name} not found. Train first.")
+        return
+
+    agent.policy_net.load_state_dict(torch.load(model_name))
     agent.policy_net.eval()
 
     agent.epsilon = 0  # No exploration
 
     print("\nWatching trained agent...\n")
-
+    
+    total_rewards_sum = 0
+    total_pipes_sum = 0
+    
     for episode in range(num_episodes):
 
         state, _ = env.reset()
@@ -84,6 +103,17 @@ def watch(num_episodes=20):
 
             state = next_state
             total_reward += reward
-
+            
+        total_rewards_sum += total_reward
+        total_pipes_sum += pipes_passed
+        
         print(f"Watch Episode {episode+1} | Pipes: {pipes_passed} | Reward: {total_reward:.2f}")
+        
+    avg_reward = total_rewards_sum / num_episodes
+    avg_pipes = total_pipes_sum / num_episodes          
+
+    print(f"\nEvaluation Results ({reward_type})")
+    print(f"Average Reward: {avg_reward:.2f}")
+    print(f"Average Pipes Passed: {avg_pipes:.2f}")
+    
     env.close()

@@ -5,11 +5,12 @@ conda env create -f environment.yml
 conda activate flappy-dqn
 
 
-For training the model for 2000 episodes (if your folder lacks dqn_model.pth):
+Valid Reward Systems = ["sparse", "basic", "survival", "pipe"]
+For training the model for 2000 episodes (if your folder lacks dqn_sparse.pth):
 
-python main.py
+python main.py sparse
 
 
-For watching the AI play 20 random episodes (only if your folder contains dqn_model.pth):
+For watching the AI play 20 random episodes (only if your folder contains dqn_sparse.pth):
 
-python main.py watch
+python main.py sparse watch

@@ -5,13 +5,13 @@ import numpy as np
 
 class FlappyBirdDNN(gym.Wrapper):
 
-    def __init__(self, render=False):
+    def __init__(self, reward_type, render=False):
         render_mode = "human" if render else None
         env = gym.make("FlappyBird-v0", render_mode=render_mode, disable_env_checker=True)
         super().__init__(env)
 
+        self.reward_type = reward_type
         self.observation_space = env.observation_space
-
         self.action_space = env.action_space
 
 
@@ -29,11 +29,38 @@ class FlappyBirdDNN(gym.Wrapper):
 
 
     def _shape_reward(self, reward, done):
-        if done:
-            return -100.0
-        if reward > 0:
-            return 20.0
-        return 0.1
+
+        # Sparse reward
+        if self.reward_type == "sparse":
+            if done:
+                return -1
+            if reward > 0:
+                return 1
+            return 0
+
+        # Basic shaping 
+        elif self.reward_type == "basic":
+            if done:
+                return -100
+            if reward > 0:
+                return 20
+            return 0.1
+
+        # Survival reward
+        elif self.reward_type == "survival":
+            if done:
+                return -100
+            return 1
+
+        # Pipe focused reward
+        elif self.reward_type == "pipe":
+            if done:
+                return -100
+            if reward > 0:
+                return 50
+            return 0
+
+        return reward
 #------------------------------------------------------#    
 # past this line starts the edging logic #edgeforbirds
 #def _get_state(self):
